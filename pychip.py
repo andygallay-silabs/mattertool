@@ -1,3 +1,5 @@
+import sys
+
 cmd_list =[
     "help",
     "vars",
@@ -87,4 +89,6 @@ def Send_ParseSetupPayload():
     # TODO
     None
 
-Print_Help()
+if len(sys.argv) > 1:
+    if sys.argv[1] == "--help":
+        Print_Help()

@@ -2,6 +2,7 @@ import sys
 import os
 import random
 import time
+import subprocess
 
 if "MATTER_ROOT" not in os.environ:
     os.environ["MATTER_ROOT"] = os.environ["HOME"] + "/connectedhomeip"
@@ -132,12 +133,23 @@ def Start_ThreadNetwork():
     Get_ThreadDataset()
 
 def Get_ThreadDataset():
-    # TODO
-    None
+    if "THREAD_DATA_SET" in os.environ:
+        os.environ["THREAD_DATA_SET"] = os.popen("sudo ot-ctl dataset active -x").read().split("\n")[0]
+        print_green("New ThreadDataset: " + os.environ["THREAD_DATA_SET"])
 
 def Pair_BLE_Thread():
-    # TODO
-    None
+    if os.environ["THREAD_DATA_SET"] == "0":
+        print_blue("Provide OpenThread DataSet")
+        return
+    
+    if os.environ["LAST_NODE_ID"] == os.environ["NODE_ID"]:
+        os.environ["NODE_ID"] = str(1 + random.randint(0, 1000000))
+    
+    os.environ["LAST_NODE_ID"] = os.environ["NODE_ID"]
+    os.system(os.environ["CHIPTOOL_PATH"] + " pairing ble-thread " + 
+              os.environ["NODE_ID"] + " hex:" + os.environ["THREAD_DATA_SET"] +
+              " " + os.environ["PINCODE"] + " " + os.environ["DISCRIMINATOR"])
+    print_blue("The Node id of the commissioned device is " + os.environ["NODE_ID"])
 
 def Pair_BLE_WiFi():
     # TODO

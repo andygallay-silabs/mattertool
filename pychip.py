@@ -1,6 +1,7 @@
 import sys
 import os
 import random
+import time
 
 if "MATTER_ROOT" not in os.environ:
     os.environ["MATTER_ROOT"] = os.environ["HOME"] + "/connectedhomeip"
@@ -116,8 +117,19 @@ def Rebuild_ChipTool():
     None
 
 def Start_ThreadNetwork():
-    # TODO
-    None
+    print_green("Starting a new thread network")
+    os.system("sudo ot-ctl factoryreset")
+    time.sleep(3)
+    os.system("sudo ot-ctl srp server disable")
+    os.system("sudo ot-ctl srp server enable")
+    os.system("sudo ot-ctl thread stop")
+    os.system("sudo ot-ctl ifconfig down")
+    os.system("sudo ot-ctl ifconfig up")
+    os.system("sudo ot-ctl prefix add fd11:22::/64 paros")
+    os.system("sudo ot-ctl thread start")
+    time.sleep(7)
+    os.system("sudo ot-ctl extpanid")
+    Get_ThreadDataset()
 
 def Get_ThreadDataset():
     # TODO

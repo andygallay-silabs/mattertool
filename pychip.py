@@ -72,8 +72,18 @@ def Print_Help():
 
 
 def Print_Vars():
-    # TODO
-    None
+    print_bold("Active Vars:")
+    print("MATTER_ROOT: " + os.environ["MATTER_ROOT"])
+    print("CHIPTOOL_PATH: " + os.environ["CHIPTOOL_PATH"])
+    print("NODE_ID: " + os.environ["NODE_ID"])
+    print("THREAD_DATA_SET: " + os.environ["THREAD_DATA_SET"])
+    print("PINCODE: " + os.environ["PINCODE"])
+    print("DISCRIMINATOR: " + os.environ["DISCRIMINATOR"])
+    if "SSID" in os.environ:
+        print("SSID: " + os.environ["SSID"])
+    print("LAST_NODE_ID: " + os.environ["LAST_NODE_ID"])
+
+    print_green("You can preset them with export X=Y before running the script")
 
 def Clean_Vars():
     # TODO
@@ -118,8 +128,6 @@ def Send_ParseSetupPayload():
 if len(sys.argv) > 1:
     if sys.argv[1] == "--help":
         Print_Help()
-
-    print(os.environ['HOME'])
-
-    for elem in os.environ:
-        print(elem)
+    
+    if sys.argv[1] == "--vars":
+        Print_Vars()

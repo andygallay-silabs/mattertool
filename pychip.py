@@ -4,6 +4,8 @@ import random
 import time
 import subprocess
 
+isNodeProvided = False
+
 if "MATTER_ROOT" not in os.environ:
     os.environ["MATTER_ROOT"] = os.environ["HOME"] + "/connectedhomeip"
 
@@ -20,7 +22,7 @@ if "ENDPOINT" not in os.environ:
     os.environ["ENDPOINT"]="1"
 
 if "NODE_ID" not in os.environ:
-    os.environ["NODE_ID"]= str(1 + random.randint(0, 1000000))
+    os.environ["NODE_ID"]= str(1 + random.randint(0, 32767) % 100000)
 
 if "LAST_NODE_ID" not in os.environ:
     os.environ["LAST_NODE_ID"] = "0"
@@ -143,7 +145,7 @@ def Pair_BLE_Thread():
         return
     
     if os.environ["LAST_NODE_ID"] == os.environ["NODE_ID"]:
-        os.environ["NODE_ID"] = str(1 + random.randint(0, 1000000))
+        os.environ["NODE_ID"] = str(1 + random.randint(0, 32767) % 100000)
     
     os.environ["LAST_NODE_ID"] = os.environ["NODE_ID"]
     os.system(os.environ["CHIPTOOL_PATH"] + " pairing ble-thread " + 
@@ -152,8 +154,22 @@ def Pair_BLE_Thread():
     print_blue("The Node id of the commissioned device is " + os.environ["NODE_ID"])
 
 def Pair_BLE_WiFi():
-    # TODO
-    None
+    if "SSID" not in os.environ:
+        print_blue("Provide SSID")
+        return
+    
+    if "WIFI_PW" not in os.environ:
+        print_blue("Provide SSID password")
+        return
+    
+    if os.environ["LAST_NODE_ID"] == os.environ["NODE_ID"] and isNodeProvided:
+        os.environ["NODE_ID"] = str(1 + random.randint(0, 32767) % 100000)
+
+    print_green("Set Node id for the commissioned device : " + os.environ("NODE_ID"))
+    os.environ["LAST_NODE_ID"] = os.environ["NODE_ID"]
+    os.system(os.environ["CHIPTOOL_PATH"] + " pairing ble-wifi " + os.environ["NODE_ID"]
+              + " " + os.environ["SSID"] + " " + os.environ["WIFI_PW"]
+              + " " + os.environ["PINCODE"] + " " + os.environ["DISCRIMINATOR"])
 
 def Send_OnOff_Cmds():
     # TODO

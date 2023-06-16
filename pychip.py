@@ -5,6 +5,8 @@ import time
 import subprocess
 
 isNodeProvided = False
+cmd = ""
+optArgs=[]
 
 if "MATTER_ROOT" not in os.environ:
     os.environ["MATTER_ROOT"] = os.environ["HOME"] + "/connectedhomeip"
@@ -172,16 +174,12 @@ def Pair_BLE_WiFi():
               + " " + os.environ["PINCODE"] + " " + os.environ["DISCRIMINATOR"])
 
 def Send_OnOff_Cmds():
-    # TODO
-    None
+    os.system(os.environ["CHIPTOOL_PATH"] + " onoff " + cmd + " " + os.environ["NODE_ID"]
+              + " " + os.environ["ENDPOINT"])
 
 def Send_ParseSetupPayload():
-    # TODO
-    None
+    os.system(os.environ["CHIPTOOL_PATH"] + " payload parse-setup-payload " + ' '.join(optArgs))
 
-def Send_ParseSetupPayload():
-    # TODO
-    None
 
 if len(sys.argv) > 1:
     if sys.argv[1] == "--help":

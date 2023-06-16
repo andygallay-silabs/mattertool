@@ -42,11 +42,26 @@ cmd_list =[
     "parsePayload"        
 ]
 
+env_vars_list = [
+    "MATTER_ROOT",
+    "CHIPTOOL_PATH",
+    "NODE_ID",
+    "THREAD_DATA_SET",
+    "PINCODE",
+    "DISCRIMINATOR",
+    "SSID",
+    "WIFI_PW",
+    "LAST_NODE_ID"
+]
+
 def print_bold(text: str):
     print('\033[1m' + text + '\033[0m')
 
 def print_green(text: str):
     print('\033[92m' + text + '\033[0m')
+
+def print_blue(text: str):
+    print('\033[94m' + text + '\033[0m')
 
 def Print_Help():
     print("This Python script centralize and simplifies the use of chip-tool and starting a clean thread network")
@@ -86,8 +101,11 @@ def Print_Vars():
     print_green("You can preset them with export X=Y before running the script")
 
 def Clean_Vars():
-    # TODO
-    None
+    print_blue("Erasing Vars:")
+    for env_var in env_vars_list:
+        if env_var in os.environ:
+            print(env_var)
+            os.unsetenv(env_var)
 
 def Clean_build_ChipTool():
     # TODO
@@ -131,3 +149,6 @@ if len(sys.argv) > 1:
     
     if sys.argv[1] == "--vars":
         Print_Vars()
+
+    if sys.argv[1] == "--cleanVars":
+        Clean_Vars()

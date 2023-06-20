@@ -2,7 +2,8 @@ import sys
 import os
 import random
 import time
-import subprocess
+import re
+import shutil
 
 isNodeProvided = False
 cmd = ""
@@ -114,12 +115,21 @@ def Clean_Vars():
             os.unsetenv(env_var)
 
 def Clean_build_ChipTool():
-    # TODO
-    None
+    print_blue("Clean Build of Chip-tool")
+    os.system("rm -rf " + os.environ["MATTER_ROOT"] + "/out")
 
+    for directory in os.listdir(os.environ["MATTER_ROOT/tmp/"]):
+        if re.fullmatch("chp_.*", directory):
+            shutil.rmtree(directory)
+
+    os.system(os.environ["MATTER_ROOT"] + "/scripts/examples/gn_build_example.sh " + os.environ["MATTER_ROOT"] + "/examples/chip-tool " + os.environ["MATTER_ROOT"]
+              + "/out/standalone")
+    
+    
 def Rebuild_ChipTool():
-    # TODO
-    None
+    print_blue("Rebuild Chip-tool")
+    os.system(os.environ["MATTER_ROOT"] + "/scripts/examples/gn_build_example.sh " + os.environ["MATTER_ROOT"] + "/examples/chip-tool " + os.environ["MATTER_ROOT"]
+              + "/out/standalone")
 
 def Start_ThreadNetwork():
     print_green("Starting a new thread network")
@@ -181,12 +191,53 @@ def Send_ParseSetupPayload():
     os.system(os.environ["CHIPTOOL_PATH"] + " payload parse-setup-payload " + ' '.join(optArgs))
 
 
-if len(sys.argv) > 1:
-    if sys.argv[1] == "--help":
-        Print_Help()
-    
-    if sys.argv[1] == "--vars":
-        Print_Vars()
+pipEnv = os.popen("pip -V").read()
 
-    if sys.argv[1] == "--cleanVars":
-        Clean_Vars()
+# Activate Matter environment if it isn't already
+if pipEnv not in os.environ["MATTER_ROOT"]:
+    os.system("source " + os.environ["MATTER_ROOT"] + "/scripts/activate.sh")
+
+
+sys_argv = sys.argv
+
+if len(sys_argv) > 1:
+    if sys_argv[1] == "--help" or sys_argv[1] == "-h":
+        Print_Help()
+
+    if sys_argv[1] == "--nodeId" or sys_argv[1] == "-n":
+        if len(sys_argv) < 2:
+            print_blue("Provide node ID value")
+        else:
+            os.environ["NODE_ID"] = sys_argv[2]
+            isNodeProvided = True
+    
+    if sys_argv[1] == "--discriminator" or sys_argv[1] == "-di":
+        if len(sys_argv) < 2:
+            print_blue("Provide discriminator value")
+        else:
+            os.environ["DISCRIMINATOR"] = sys_argv[2]
+
+    if sys_argv[1] == "--endpoint" or sys_argv[1] == "-e":
+        if len(sys_argv) < 2:
+            print_blue("Provide endpoint value")
+        else:
+            os.environ["ENDPOINT"] = sys_argv[2]
+
+
+    if sys_argv[1] == "--dataset" or sys_argv[1] == "-d":
+        if len(sys_argv) < 2:
+            print_blue("Provide dataset Hex value")
+        else:
+            os.environ["THREAD_DATA_SET"] = sys_argv[2]
+
+    if sys_argv[1] == "--ssid" or sys_argv[1] == "-s":
+        if len(sys_argv) < 2:
+            print_blue("Provide SSID name")
+        else:
+            os.environ["SSID"] = sys_argv[2]
+
+    if sys_argv[1] == "--password" or sys_argv[1] == "-p":
+        if len(sys_argv) < 2:
+            print_blue("Provide SSID password")
+        else:
+            os.environ["WIFI_PW"] = sys_argv[2]

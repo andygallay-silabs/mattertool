@@ -220,26 +220,26 @@ del(sys_argv[0])
 # Switch case depending on the arguments, parse the arguments until no more to parse
 exit = False
 while not exit:
-    if len(sys_argv) == 0 and cmd != "":
-        if cmd in cmd_list:
-            cmd_dict[cmd]()
-        else:
-            os.system(os.environ["CHIPTOOL_PATH"] + cmd + " " + ' '.join(optArgs))
-        cmd = ""
-
     if len(sys_argv) == 0:
-        os.system(os.environ["CHIPTOOL_PATH"])
-        print("")
-        print("> Press q to end pychip session or enter any argument.")
-        user_inputs = input()
+        if cmd != "":
+            if cmd in cmd_list:
+                cmd_dict[cmd]()
+            else:
+                os.system(os.environ["CHIPTOOL_PATH"] + cmd + " " + ' '.join(optArgs))
+            cmd = ""
+        else:
+            os.system(os.environ["CHIPTOOL_PATH"])
+            print("")
+            print("> Press q to end pychip session or enter any argument.")
+            user_inputs = input()
 
-        if user_inputs == "q":
-            exit = True
-            break
+            if user_inputs == "q":
+                exit = True
+                break
 
-        user_inputs = user_inputs.split()
-        for user_input  in user_inputs:
-            sys_argv.append(user_input)
+            user_inputs = user_inputs.split()
+            for user_input  in user_inputs:
+                sys_argv.append(user_input)
 
 
     if len(sys_argv) > 0:

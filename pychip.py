@@ -211,14 +211,28 @@ pipEnv = os.popen("pip -V").read()
 
 # Activate Matter environment if it isn't already
 if pipEnv not in os.environ["MATTER_ROOT"]:
-    os.system("source " + os.environ["MATTER_ROOT"] + "/scripts/activate.sh")
+    os.system(os.environ["MATTER_ROOT"] + "/scripts/activate.sh")
 
 # Get arguments and remove the first one (invocation of pychip.py)
 sys_argv = sys.argv
 del(sys_argv[0])
 
 # Switch case depending on the arguments, parse the arguments until no more to parse
-while len(sys_argv) >= 1:
+exit = False
+while not exit:
+
+    if len(sys_argv) == 0:
+        print("Press q to end pychip session or enter any argument.")
+        user_inputs = input()
+
+        if user_inputs == "q":
+            exit = True
+            break
+
+        user_inputs = user_inputs.split()
+        for user_input  in user_inputs:
+            sys_argv.append(user_input)
+
     if sys_argv[0] == "--help" or sys_argv[0] == "-h":
         Print_Help()
         del(sys_argv[0])
@@ -290,7 +304,8 @@ while len(sys_argv) >= 1:
         optArgs.append(sys_argv[0])
     del(sys_argv[0])
 
-if cmd in cmd_list:
-    cmd_dict[cmd]()
-else:
-    os.system(os.environ["CHIPTOOL_PATH"] + cmd + " " + ' '.join(optArgs))
+    if cmd in cmd_list:
+        cmd_dict[cmd]()
+    else:
+        os.system(os.environ["CHIPTOOL_PATH"] + cmd + " " + ' '.join(optArgs))
+

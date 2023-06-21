@@ -241,70 +241,72 @@ while not exit:
         for user_input  in user_inputs:
             sys_argv.append(user_input)
 
-    if sys_argv[0] == "--help" or sys_argv[0] == "-h":
-        Print_Help()
-        del(sys_argv[0])
-        continue
 
-    if sys_argv[0] == "--nodeId" or sys_argv[0] == "-n":
-        if len(sys_argv) < 2:
-            print_blue("Provide node ID value")
+    if len(sys_argv) > 0:
+        if sys_argv[0] == "--help" or sys_argv[0] == "-h":
+            Print_Help()
             del(sys_argv[0])
-        else:
-            os.environ["NODE_ID"] = sys_argv[1]
-            isNodeProvided = True
-            del(sys_argv[0])
-            del(sys_argv[0])
-        continue
-    
-    if sys_argv[0] == "--discriminator" or sys_argv[0] == "-di":
-        if len(sys_argv) < 2:
-            print_blue("Provide discriminator value")
-            del(sys_argv[0])
-        else:
-            os.environ["DISCRIMINATOR"] = sys_argv[1]
-            del(sys_argv[0])
-            del(sys_argv[0])
-        continue
+            continue
 
-    if sys_argv[0] == "--endpoint" or sys_argv[0] == "-e":
-        if len(sys_argv) < 2:
-            print_blue("Provide endpoint value")
-            del(sys_argv[0])
-        else:
-            os.environ["ENDPOINT"] = sys_argv[1]
-            del(sys_argv[0])
-            del(sys_argv[0])
-        continue
+        if sys_argv[0] == "--nodeId" or sys_argv[0] == "-n":
+            if len(sys_argv) < 2:
+                print_blue("Provide node ID value")
+                del(sys_argv[0])
+            else:
+                os.environ["NODE_ID"] = sys_argv[1]
+                isNodeProvided = True
+                del(sys_argv[0])
+                del(sys_argv[0])
+            continue
+        
+        if sys_argv[0] == "--discriminator" or sys_argv[0] == "-di":
+            if len(sys_argv) < 2:
+                print_blue("Provide discriminator value")
+                del(sys_argv[0])
+            else:
+                os.environ["DISCRIMINATOR"] = sys_argv[1]
+                del(sys_argv[0])
+                del(sys_argv[0])
+            continue
 
-    if sys_argv[0] == "--dataset" or sys_argv[0] == "-d":
-        if len(sys_argv) < 2:
-            print_blue("Provide dataset Hex value")
-            del(sys_argv[0])
-        else:
-            os.environ["THREAD_DATA_SET"] = sys_argv[1]
-            del(sys_argv[0])
-            del(sys_argv[0])
-        continue
+        if sys_argv[0] == "--endpoint" or sys_argv[0] == "-e":
+            if len(sys_argv) < 2:
+                print_blue("Provide endpoint value")
+                del(sys_argv[0])
+            else:
+                os.environ["ENDPOINT"] = sys_argv[1]
+                del(sys_argv[0])
+                del(sys_argv[0])
+            continue
 
-    if sys_argv[0] == "--ssid" or sys_argv[0] == "-s":
-        if len(sys_argv) < 2:
-            print_blue("Provide SSID name")
-        else:
-            os.environ["SSID"] = sys_argv[1]
-            del(sys_argv[0])
-            del(sys_argv[0])
-        continue
+        if sys_argv[0] == "--dataset" or sys_argv[0] == "-d":
+            if len(sys_argv) < 2:
+                print_blue("Provide dataset Hex value")
+                del(sys_argv[0])
+            else:
+                os.environ["THREAD_DATA_SET"] = sys_argv[1]
+                del(sys_argv[0])
+                del(sys_argv[0])
+            continue
 
-    if sys_argv[0] == "--password" or sys_argv[0] == "-p":
-        if len(sys_argv) < 2:
-            print_blue("Provide SSID password")
-            del(sys_argv[0])
-        else:
-            os.environ["WIFI_PW"] = sys_argv[1]
-            del(sys_argv[0])
-            del(sys_argv[0])
-        continue
+        if sys_argv[0] == "--ssid" or sys_argv[0] == "-s":
+            if len(sys_argv) < 2:
+                print_blue("Provide SSID name")
+            else:
+                os.environ["SSID"] = sys_argv[1]
+                del(sys_argv[0])
+                del(sys_argv[0])
+            continue
+
+        if sys_argv[0] == "--password" or sys_argv[0] == "-p":
+            if len(sys_argv) < 2:
+                print_blue("Provide SSID password")
+                del(sys_argv[0])
+            else:
+                os.environ["WIFI_PW"] = sys_argv[1]
+                del(sys_argv[0])
+                del(sys_argv[0])
+            continue
 
     if cmd == "":
         cmd = sys_argv[0]

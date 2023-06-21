@@ -308,8 +308,8 @@ while not exit:
                 del(sys_argv[0])
             continue
 
-    if cmd == "":
-        cmd = sys_argv[0]
-    else:
-        optArgs.append(sys_argv[0])
-    del(sys_argv[0])
+        if cmd == "":
+            cmd = sys_argv[0]
+        else:
+            optArgs.append(sys_argv[0])
+        del(sys_argv[0])

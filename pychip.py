@@ -228,6 +228,7 @@ while not exit:
         cmd = ""
 
     if len(sys_argv) == 0:
+        os.system(os.environ["CHIPTOOL_PATH"])
         print("")
         print("> Press q to end pychip session or enter any argument.")
         user_inputs = input()

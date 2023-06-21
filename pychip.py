@@ -191,53 +191,106 @@ def Send_ParseSetupPayload():
     os.system(os.environ["CHIPTOOL_PATH"] + " payload parse-setup-payload " + ' '.join(optArgs))
 
 
+cmd_dict = {
+    "help": Print_Help,
+    "vars": Print_Vars,
+    "cleanVars": Clean_Vars,
+    "buildCT": Clean_build_ChipTool,
+    "rebuildCT": Rebuild_ChipTool,
+    "startThread": Start_ThreadNetwork,
+    "getThreadDataset": Get_ThreadDataset,
+    "bleThread": Pair_BLE_Thread,
+    "bleWifi": Pair_BLE_WiFi,
+    "on": Send_OnOff_Cmds,
+    "off": Send_OnOff_Cmds,
+    "toggle": Send_OnOff_Cmds,
+    "parsePayload": Send_ParseSetupPayload   
+}
+
 pipEnv = os.popen("pip -V").read()
 
 # Activate Matter environment if it isn't already
 if pipEnv not in os.environ["MATTER_ROOT"]:
     os.system("source " + os.environ["MATTER_ROOT"] + "/scripts/activate.sh")
 
-
+# Get arguments and remove the first one (invocation of pychip.py)
 sys_argv = sys.argv
+del(sys_argv[0])
 
-if len(sys_argv) > 1:
-    if sys_argv[1] == "--help" or sys_argv[1] == "-h":
+# Switch case depending on the arguments, parse the arguments until no more to parse
+while len(sys_argv) >= 1:
+    if sys_argv[0] == "--help" or sys_argv[0] == "-h":
         Print_Help()
+        del(sys_argv[0])
+        continue
 
-    if sys_argv[1] == "--nodeId" or sys_argv[1] == "-n":
+    if sys_argv[0] == "--nodeId" or sys_argv[0] == "-n":
         if len(sys_argv) < 2:
             print_blue("Provide node ID value")
+            del(sys_argv[0])
         else:
-            os.environ["NODE_ID"] = sys_argv[2]
+            os.environ["NODE_ID"] = sys_argv[1]
             isNodeProvided = True
+            del(sys_argv[0])
+            del(sys_argv[0])
+        continue
     
-    if sys_argv[1] == "--discriminator" or sys_argv[1] == "-di":
+    if sys_argv[0] == "--discriminator" or sys_argv[0] == "-di":
         if len(sys_argv) < 2:
             print_blue("Provide discriminator value")
+            del(sys_argv[0])
         else:
-            os.environ["DISCRIMINATOR"] = sys_argv[2]
+            os.environ["DISCRIMINATOR"] = sys_argv[1]
+            del(sys_argv[0])
+            del(sys_argv[0])
+        continue
 
-    if sys_argv[1] == "--endpoint" or sys_argv[1] == "-e":
+    if sys_argv[0] == "--endpoint" or sys_argv[0] == "-e":
         if len(sys_argv) < 2:
             print_blue("Provide endpoint value")
+            del(sys_argv[0])
         else:
-            os.environ["ENDPOINT"] = sys_argv[2]
+            os.environ["ENDPOINT"] = sys_argv[1]
+            del(sys_argv[0])
+            del(sys_argv[0])
+        continue
 
-
-    if sys_argv[1] == "--dataset" or sys_argv[1] == "-d":
+    if sys_argv[0] == "--dataset" or sys_argv[0] == "-d":
         if len(sys_argv) < 2:
             print_blue("Provide dataset Hex value")
+            del(sys_argv[0])
         else:
-            os.environ["THREAD_DATA_SET"] = sys_argv[2]
+            os.environ["THREAD_DATA_SET"] = sys_argv[1]
+            del(sys_argv[0])
+            del(sys_argv[0])
+        continue
 
-    if sys_argv[1] == "--ssid" or sys_argv[1] == "-s":
+    if sys_argv[0] == "--ssid" or sys_argv[0] == "-s":
         if len(sys_argv) < 2:
             print_blue("Provide SSID name")
         else:
-            os.environ["SSID"] = sys_argv[2]
+            os.environ["SSID"] = sys_argv[1]
+            del(sys_argv[0])
+            del(sys_argv[0])
+        continue
 
-    if sys_argv[1] == "--password" or sys_argv[1] == "-p":
+    if sys_argv[0] == "--password" or sys_argv[0] == "-p":
         if len(sys_argv) < 2:
             print_blue("Provide SSID password")
+            del(sys_argv[0])
         else:
-            os.environ["WIFI_PW"] = sys_argv[2]
+            os.environ["WIFI_PW"] = sys_argv[1]
+            del(sys_argv[0])
+            del(sys_argv[0])
+        continue
+
+    if cmd == "":
+        cmd = sys_argv[0]
+    else:
+        optArgs.append(sys_argv[0])
+    del(sys_argv[0])
+
+if cmd in cmd_list:
+    cmd_dict[cmd]()
+else:
+    os.system(os.environ["CHIPTOOL_PATH"] + cmd + " " + ' '.join(optArgs))

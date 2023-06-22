@@ -43,6 +43,7 @@ def atexit_handler():
     json_file = open("session.json", "w")
 
     json.dump(session_data, json_file)
+    json_file.close()
 
 atexit.register(atexit_handler)
 

@@ -17,7 +17,7 @@ session_data = json.load(json_file)
 
 MATTER_ROOT = os.environ["HOME"] + session_data["MATTER_ROOT"]
 CHIPTOOL_PATH = MATTER_ROOT + session_data["CHIPTOOL_PATH"]
-PINCODE = session_data["PINCODE"]
+PINCODE = session_data["PINCODE"]   
 DISCRIMINATOR = session_data["DISCRIMINATOR"]
 ENDPOINT = session_data["ENDPOINT"]
 NODE_ID = session_data["NODE_ID"]
@@ -30,7 +30,7 @@ if NODE_ID == 0:
     NODE_ID = 1 + random.randint(0, 32767) % 100000
 
 def atexit_handler():
-    json_file = open("session.json", "r+")
+    json_file = open("session.json", "r")
     session_data = json.load(json_file)
 
     session_data["NODE_ID"] = NODE_ID
@@ -39,7 +39,10 @@ def atexit_handler():
     session_data["SSID"] = SSID
     session_data["WIFI_PW"] = WIFI_PW
 
-    json_file.write(session_data)
+    json_file.close()
+    json_file = open("session.json", "w")
+
+    json.dump(session_data, json_file)
 
 atexit.register(atexit_handler)
 
@@ -229,98 +232,79 @@ sys_argv = sys.argv
 del(sys_argv[0])
 
 # Switch case depending on the arguments, parse the arguments until no more to parse
-exit = False
-while not exit:
-    if len(sys_argv) == 0:
-        if cmd != "":
-            if cmd in cmd_list:
-                cmd_dict[cmd]()
-            else:
-                os.system(CHIPTOOL_PATH + cmd + " " + ' '.join(optArgs))
-            cmd = ""
-        else:
-            os.system(CHIPTOOL_PATH)
-            print("")
-            print("> Press q to end mattertool session or enter any argument.")
-            user_inputs = input()
-
-            if user_inputs == "q":
-                exit = True
-                break
-
-            user_inputs = user_inputs.split()
-            for user_input  in user_inputs:
-                sys_argv.append(user_input)
-
-
-    if len(sys_argv) > 0:
-        if sys_argv[0] == "--help" or sys_argv[0] == "-h":
-            Print_Help()
-            del(sys_argv[0])
-            continue
-
-        if sys_argv[0] == "--nodeId" or sys_argv[0] == "-n":
-            if len(sys_argv) < 2:
-                print_blue("Provide node ID value")
-                del(sys_argv[0])
-            else:
-                NODE_ID = int(sys_argv[1])
-                isNodeProvided = True
-                del(sys_argv[0])
-                del(sys_argv[0])
-            continue
-        
-        if sys_argv[0] == "--discriminator" or sys_argv[0] == "-di":
-            if len(sys_argv) < 2:
-                print_blue("Provide discriminator value")
-                del(sys_argv[0])
-            else:
-                DISCRIMINATOR = int(sys_argv[1])
-                del(sys_argv[0])
-                del(sys_argv[0])
-            continue
-
-        if sys_argv[0] == "--endpoint" or sys_argv[0] == "-e":
-            if len(sys_argv) < 2:
-                print_blue("Provide endpoint value")
-                del(sys_argv[0])
-            else:
-                ENDPOINT = int(sys_argv[1])
-                del(sys_argv[0])
-                del(sys_argv[0])
-            continue
-
-        if sys_argv[0] == "--dataset" or sys_argv[0] == "-d":
-            if len(sys_argv) < 2:
-                print_blue("Provide dataset Hex value")
-                del(sys_argv[0])
-            else:
-                THREAD_DATA_SET = sys_argv[1]
-                del(sys_argv[0])
-                del(sys_argv[0])
-            continue
-
-        if sys_argv[0] == "--ssid" or sys_argv[0] == "-s":
-            if len(sys_argv) < 2:
-                print_blue("Provide SSID name")
-            else:
-                SSID = sys_argv[1]
-                del(sys_argv[0])
-                del(sys_argv[0])
-            continue
-
-        if sys_argv[0] == "--password" or sys_argv[0] == "-p":
-            if len(sys_argv) < 2:
-                print_blue("Provide SSID password")
-                del(sys_argv[0])
-            else:
-                WIFI_PW = sys_argv[1]
-                del(sys_argv[0])
-                del(sys_argv[0])
-            continue
-
-        if cmd == "":
-            cmd = sys_argv[0]
-        else:
-            optArgs.append(sys_argv[0])
+while len(sys_argv) >= 1:
+    if sys_argv[0] == "--help" or sys_argv[0] == "-h":
+        Print_Help()
         del(sys_argv[0])
+        continue
+
+    if sys_argv[0] == "--nodeId" or sys_argv[0] == "-n":
+        if len(sys_argv) < 2:
+            print_blue("Provide node ID value")
+            del(sys_argv[0])
+        else:
+            NODE_ID = int(sys_argv[1])
+            isNodeProvided = True
+            del(sys_argv[0])
+            del(sys_argv[0])
+        continue
+    
+    if sys_argv[0] == "--discriminator" or sys_argv[0] == "-di":
+        if len(sys_argv) < 2:
+            print_blue("Provide discriminator value")
+            del(sys_argv[0])
+        else:
+            DISCRIMINATOR = int(sys_argv[1])
+            del(sys_argv[0])
+            del(sys_argv[0])
+        continue
+
+    if sys_argv[0] == "--endpoint" or sys_argv[0] == "-e":
+        if len(sys_argv) < 2:
+            print_blue("Provide endpoint value")
+            del(sys_argv[0])
+        else:
+            ENDPOINT = int(sys_argv[1])
+            del(sys_argv[0])
+            del(sys_argv[0])
+        continue
+
+    if sys_argv[0] == "--dataset" or sys_argv[0] == "-d":
+        if len(sys_argv) < 2:
+            print_blue("Provide dataset Hex value")
+            del(sys_argv[0])
+        else:
+            THREAD_DATA_SET = sys_argv[1]
+            del(sys_argv[0])
+            del(sys_argv[0])
+        continue
+
+    if sys_argv[0] == "--ssid" or sys_argv[0] == "-s":
+        if len(sys_argv) < 2:
+            print_blue("Provide SSID name")
+        else:
+            SSID = sys_argv[1]
+            del(sys_argv[0])
+            del(sys_argv[0])
+        continue
+
+    if sys_argv[0] == "--password" or sys_argv[0] == "-p":
+        if len(sys_argv) < 2:
+            print_blue("Provide SSID password")
+            del(sys_argv[0])
+        else:
+            WIFI_PW = sys_argv[1]
+            del(sys_argv[0])
+            del(sys_argv[0])
+        continue
+
+    if cmd == "":
+        cmd = sys_argv[0]
+    else:
+        optArgs.append(sys_argv[0])
+    del(sys_argv[0])
+
+if cmd in cmd_list:
+    cmd_dict[cmd]()
+else:
+    os.system(CHIPTOOL_PATH + cmd + " " + ' '.join(optArgs))

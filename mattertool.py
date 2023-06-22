@@ -4,34 +4,44 @@ import random
 import time
 import re
 import shutil
+import json
+import atexit
 
 isNodeProvided = False
 cmd = ""
 optArgs=[]
 
-if "MATTER_ROOT" not in os.environ:
-    os.environ["MATTER_ROOT"] = os.environ["HOME"] + "/connectedhomeip"
+# Session loading
+json_file = open("session.json")
+session_data = json.load(json_file)
 
-if "CHIPTOOL_PATH" not in os.environ:
-    os.environ["CHIPTOOL_PATH"] = os.environ["MATTER_ROOT"] + "/out/standalone/chip-tool"
+MATTER_ROOT = os.environ["HOME"] + session_data["MATTER_ROOT"]
+CHIPTOOL_PATH = MATTER_ROOT + session_data["CHIPTOOL_PATH"]
+PINCODE = session_data["PINCODE"]
+DISCRIMINATOR = session_data["DISCRIMINATOR"]
+ENDPOINT = session_data["ENDPOINT"]
+NODE_ID = session_data["NODE_ID"]
+LAST_NODE_ID = session_data["LAST_NODE_ID"]
+THREAD_DATA_SET = session_data["THREAD_DATA_SET"]
+SSID = session_data["SSID"]
+WIFI_PW = session_data["WIFI_PW"]
 
-if "PINCODE" not in os.environ:
-    os.environ["PINCODE"] = "20202021"
+if NODE_ID == 0:
+    NODE_ID = 1 + random.randint(0, 32767) % 100000
 
-if "DISCRIMINATOR" not in os.environ:
-    os.environ["DISCRIMINATOR"]="3840"
+def atexit_handler():
+    json_file = open("session.json", "r+")
+    session_data = json.load(json_file)
 
-if "ENDPOINT" not in os.environ:
-    os.environ["ENDPOINT"]="1"
+    session_data["NODE_ID"] = NODE_ID
+    session_data["LAST_NODE_ID"] = LAST_NODE_ID
+    session_data["THREAD_DATA_SET"] = THREAD_DATA_SET
+    session_data["SSID"] = SSID
+    session_data["WIFI_PW"] = WIFI_PW
 
-if "NODE_ID" not in os.environ:
-    os.environ["NODE_ID"]= str(1 + random.randint(0, 32767) % 100000)
+    json_file.write(session_data)
 
-if "LAST_NODE_ID" not in os.environ:
-    os.environ["LAST_NODE_ID"] = "0"
-
-if "THREAD_DATA_SET" not in os.environ:
-    os.environ["THREAD_DATA_SET"] = "0"
+atexit.register(atexit_handler)
 
 cmd_list =[
     "help",
@@ -95,40 +105,42 @@ def Print_Help():
 
 def Print_Vars():
     print_bold("Active Vars:")
-    print("MATTER_ROOT: " + os.environ["MATTER_ROOT"])
-    print("CHIPTOOL_PATH: " + os.environ["CHIPTOOL_PATH"])
-    print("NODE_ID: " + os.environ["NODE_ID"])
-    print("THREAD_DATA_SET: " + os.environ["THREAD_DATA_SET"])
-    print("PINCODE: " + os.environ["PINCODE"])
-    print("DISCRIMINATOR: " + os.environ["DISCRIMINATOR"])
-    if "SSID" in os.environ:
-        print("SSID: " + os.environ["SSID"])
-    print("LAST_NODE_ID: " + os.environ["LAST_NODE_ID"])
+    print("MATTER_ROOT: " + MATTER_ROOT)
+    print("CHIPTOOL_PATH: " + CHIPTOOL_PATH)
+    print("NODE_ID: " + NODE_ID)
+    print("THREAD_DATA_SET: " + THREAD_DATA_SET)
+    print("PINCODE: " + str(PINCODE))
+    print("DISCRIMINATOR: " + DISCRIMINATOR)
+    print("SSID" + SSID)
+    print("LAST_NODE_ID: " + LAST_NODE_ID)
 
     print_green("You can preset them with export X=Y before running the script")
 
 def Clean_Vars():
-    print_blue("Erasing Vars:")
-    for env_var in env_vars_list:
-        if env_var in os.environ:
-            print(env_var)
-            os.unsetenv(env_var)
+    print_blue("Erasing Vars")
+    DISCRIMINATOR = 3840
+    ENDPOINT = 1
+    NODE_ID = 0
+    LAST_NODE_ID = 0
+    THREAD_DATA_SET = ""
+    SSID = ""
+    WIFI_PW = ""
 
 def Clean_build_ChipTool():
     print_blue("Clean Build of Chip-tool")
-    os.system("rm -rf " + os.environ["MATTER_ROOT"] + "/out")
+    os.system("rm -rf " + MATTER_ROOT + "/out")
 
-    for directory in os.listdir(os.environ["MATTER_ROOT/tmp/"]):
+    for directory in os.listdir(MATTER_ROOT + "/tmp/"):
         if re.fullmatch("chp_.*", directory):
             shutil.rmtree(directory)
 
-    os.system(os.environ["MATTER_ROOT"] + "/scripts/examples/gn_build_example.sh " + os.environ["MATTER_ROOT"] + "/examples/chip-tool " + os.environ["MATTER_ROOT"]
+    os.system(MATTER_ROOT + "/scripts/examples/gn_build_example.sh " + MATTER_ROOT + "/examples/chip-tool " + MATTER_ROOT
               + "/out/standalone")
     
     
 def Rebuild_ChipTool():
     print_blue("Rebuild Chip-tool")
-    os.system(os.environ["MATTER_ROOT"] + "/scripts/examples/gn_build_example.sh " + os.environ["MATTER_ROOT"] + "/examples/chip-tool " + os.environ["MATTER_ROOT"]
+    os.system(MATTER_ROOT + "/scripts/examples/gn_build_example.sh " + MATTER_ROOT + "/examples/chip-tool " + MATTER_ROOT
               + "/out/standalone")
 
 def Start_ThreadNetwork():
@@ -147,48 +159,47 @@ def Start_ThreadNetwork():
     Get_ThreadDataset()
 
 def Get_ThreadDataset():
-    if "THREAD_DATA_SET" in os.environ:
-        os.environ["THREAD_DATA_SET"] = os.popen("sudo ot-ctl dataset active -x").read().split("\n")[0]
-        print_green("New ThreadDataset: " + os.environ["THREAD_DATA_SET"])
+    THREAD_DATA_SET = os.popen("sudo ot-ctl dataset active -x").read().split("\n")[0]
+    print_green("New ThreadDataset: " + THREAD_DATA_SET)
 
 def Pair_BLE_Thread():
-    if os.environ["THREAD_DATA_SET"] == "0":
+    if THREAD_DATA_SET == "0":
         print_blue("Provide OpenThread DataSet")
         return
     
-    if os.environ["LAST_NODE_ID"] == os.environ["NODE_ID"]:
-        os.environ["NODE_ID"] = str(1 + random.randint(0, 32767) % 100000)
+    if LAST_NODE_ID == NODE_ID:
+        NODE_ID = 1 + random.randint(0, 32767) % 100000
     
-    os.environ["LAST_NODE_ID"] = os.environ["NODE_ID"]
-    os.system(os.environ["CHIPTOOL_PATH"] + " pairing ble-thread " + 
-              os.environ["NODE_ID"] + " hex:" + os.environ["THREAD_DATA_SET"] +
-              " " + os.environ["PINCODE"] + " " + os.environ["DISCRIMINATOR"])
-    print_blue("The Node id of the commissioned device is " + os.environ["NODE_ID"])
+    LAST_NODE_ID = NODE_ID
+    os.system(CHIPTOOL_PATH + " pairing ble-thread " + 
+              str(NODE_ID) + " hex:" + THREAD_DATA_SET +
+              " " + str(PINCODE) + " " + str(DISCRIMINATOR))
+    print_blue("The Node id of the commissioned device is " + str(NODE_ID))
 
 def Pair_BLE_WiFi():
-    if "SSID" not in os.environ:
+    if "SSID" == "":
         print_blue("Provide SSID")
         return
     
-    if "WIFI_PW" not in os.environ:
+    if "WIFI_PW" == "":
         print_blue("Provide SSID password")
         return
     
-    if os.environ["LAST_NODE_ID"] == os.environ["NODE_ID"] and isNodeProvided:
-        os.environ["NODE_ID"] = str(1 + random.randint(0, 32767) % 100000)
+    if LAST_NODE_ID == NODE_ID and isNodeProvided:
+        NODE_ID = 1 + random.randint(0, 32767) % 100000
 
-    print_green("Set Node id for the commissioned device : " + os.environ("NODE_ID"))
-    os.environ["LAST_NODE_ID"] = os.environ["NODE_ID"]
-    os.system(os.environ["CHIPTOOL_PATH"] + " pairing ble-wifi " + os.environ["NODE_ID"]
-              + " " + os.environ["SSID"] + " " + os.environ["WIFI_PW"]
-              + " " + os.environ["PINCODE"] + " " + os.environ["DISCRIMINATOR"])
+    print_green("Set Node id for the commissioned device : " + str(NODE_ID))
+    LAST_NODE_ID = NODE_ID
+    os.system(CHIPTOOL_PATH + " pairing ble-wifi " + str(NODE_ID)
+              + " " + SSID + " " + WIFI_PW
+              + " " + str(PINCODE) + " " + str(DISCRIMINATOR))
 
 def Send_OnOff_Cmds():
-    os.system(os.environ["CHIPTOOL_PATH"] + " onoff " + cmd + " " + os.environ["NODE_ID"]
-              + " " + os.environ["ENDPOINT"])
+    os.system(CHIPTOOL_PATH + " onoff " + cmd + " " + str(NODE_ID)
+              + " " + str(ENDPOINT))
 
 def Send_ParseSetupPayload():
-    os.system(os.environ["CHIPTOOL_PATH"] + " payload parse-setup-payload " + ' '.join(optArgs))
+    os.system(CHIPTOOL_PATH + " payload parse-setup-payload " + ' '.join(optArgs))
 
 
 cmd_dict = {
@@ -210,8 +221,8 @@ cmd_dict = {
 pipEnv = os.popen("pip -V").read()
 
 # Activate Matter environment if it isn't already
-if pipEnv not in os.environ["MATTER_ROOT"]:
-    os.system(os.environ["MATTER_ROOT"] + "/scripts/activate.sh")
+if pipEnv not in MATTER_ROOT:
+    os.system(MATTER_ROOT + "/scripts/activate.sh")
 
 # Get arguments and remove the first one (invocation of mattertool.py)
 sys_argv = sys.argv
@@ -225,10 +236,10 @@ while not exit:
             if cmd in cmd_list:
                 cmd_dict[cmd]()
             else:
-                os.system(os.environ["CHIPTOOL_PATH"] + cmd + " " + ' '.join(optArgs))
+                os.system(CHIPTOOL_PATH + cmd + " " + ' '.join(optArgs))
             cmd = ""
         else:
-            os.system(os.environ["CHIPTOOL_PATH"])
+            os.system(CHIPTOOL_PATH)
             print("")
             print("> Press q to end mattertool session or enter any argument.")
             user_inputs = input()
@@ -253,7 +264,7 @@ while not exit:
                 print_blue("Provide node ID value")
                 del(sys_argv[0])
             else:
-                os.environ["NODE_ID"] = sys_argv[1]
+                NODE_ID = int(sys_argv[1])
                 isNodeProvided = True
                 del(sys_argv[0])
                 del(sys_argv[0])
@@ -264,7 +275,7 @@ while not exit:
                 print_blue("Provide discriminator value")
                 del(sys_argv[0])
             else:
-                os.environ["DISCRIMINATOR"] = sys_argv[1]
+                DISCRIMINATOR = int(sys_argv[1])
                 del(sys_argv[0])
                 del(sys_argv[0])
             continue
@@ -274,7 +285,7 @@ while not exit:
                 print_blue("Provide endpoint value")
                 del(sys_argv[0])
             else:
-                os.environ["ENDPOINT"] = sys_argv[1]
+                ENDPOINT = int(sys_argv[1])
                 del(sys_argv[0])
                 del(sys_argv[0])
             continue
@@ -284,7 +295,7 @@ while not exit:
                 print_blue("Provide dataset Hex value")
                 del(sys_argv[0])
             else:
-                os.environ["THREAD_DATA_SET"] = sys_argv[1]
+                THREAD_DATA_SET = sys_argv[1]
                 del(sys_argv[0])
                 del(sys_argv[0])
             continue
@@ -293,7 +304,7 @@ while not exit:
             if len(sys_argv) < 2:
                 print_blue("Provide SSID name")
             else:
-                os.environ["SSID"] = sys_argv[1]
+                SSID = sys_argv[1]
                 del(sys_argv[0])
                 del(sys_argv[0])
             continue
@@ -303,7 +314,7 @@ while not exit:
                 print_blue("Provide SSID password")
                 del(sys_argv[0])
             else:
-                os.environ["WIFI_PW"] = sys_argv[1]
+                WIFI_PW = sys_argv[1]
                 del(sys_argv[0])
                 del(sys_argv[0])
             continue

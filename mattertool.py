@@ -110,12 +110,12 @@ def Print_Vars():
     print_bold("Active Vars:")
     print("MATTER_ROOT: " + MATTER_ROOT)
     print("CHIPTOOL_PATH: " + CHIPTOOL_PATH)
-    print("NODE_ID: " + NODE_ID)
+    print("NODE_ID: " + str(NODE_ID))
     print("THREAD_DATA_SET: " + THREAD_DATA_SET)
     print("PINCODE: " + str(PINCODE))
-    print("DISCRIMINATOR: " + DISCRIMINATOR)
+    print("DISCRIMINATOR: " + str(DISCRIMINATOR))
     print("SSID" + SSID)
-    print("LAST_NODE_ID: " + LAST_NODE_ID)
+    print("LAST_NODE_ID: " + str(LAST_NODE_ID))
 
     print_green("You can preset them with export X=Y before running the script")
 

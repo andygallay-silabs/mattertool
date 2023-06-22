@@ -121,6 +121,13 @@ def Print_Vars():
     print_green("You can preset them with export X=Y before running the script")
 
 def Clean_Vars():
+    global DISCRIMINATOR
+    global ENDPOINT
+    global NODE_ID
+    global LAST_NODE_ID
+    global THREAD_DATA_SET
+    global SSID
+    global WIFI_PW
     print_blue("Erasing Vars")
     DISCRIMINATOR = 3840
     ENDPOINT = 1

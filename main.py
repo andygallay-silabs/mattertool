@@ -3,9 +3,9 @@ import os
 import json
 import atexit
 
-import MatterTool
+import mattertool
 
-matterTool = MatterTool.MatterTool()
+matterTool = mattertool.MatterTool()
 
 def atexit_handler():
     json_file = open("session.json", "r")

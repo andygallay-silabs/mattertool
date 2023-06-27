@@ -45,11 +45,20 @@ class MatterTool:
             "parsePayload"        
         ]
 
-    def SystemCall(self, command: str, args: list[str], verbose: bool = False):
+    def SystemCall(self, command: str, args: list[str], verbose: bool = False) -> None:
         result = None
-        run_args = [command] + args
-        result = subprocess.run(run_args, capture_output=not verbose, text=True, check=True, shell=True)
-        return result
+        try:
+            run_args = [command] + args
+            result = subprocess.run(run_args, capture_output=not verbose, text=True, check=True, shell=True)
+        except subprocess.CalledProcessError:
+            if verbose:
+                print("Error when running command: " + command)
+        else:
+            if verbose:
+                print("Successfully ran: " + command)
+        finally:
+            return result
+            
 
     def CleanVars(self) -> None:
         self.DISCRIMINATOR = 3840
@@ -68,9 +77,6 @@ class MatterTool:
 
     def print_blue(self, text: str) -> None:
         print('\033[94m' + text + '\033[0m')
-
-    def print_red(self, text: str) -> None:
-        print('\033[91m' + text + '\033[0m')
 
     def PrintVars(self) -> None:
         self.print_bold("Active Vars:")
@@ -108,23 +114,20 @@ class MatterTool:
         self.print_green("You can also enter the full chip-tool command (without the chip-tool) e.g: Mattertool levelcontrol read current-level 106 1")
 
     def StartThreadNetwork(self) -> None:
+        results = []
         self.print_green("Starting a new thread network")
-        try:
-            self.SystemCall("sudo", ["ot-ctl", "factoryreset"])
-            time.sleep(3)
-            self.SystemCall("sudo", ["ot-ctl", "srp", "server" "disable"])
-            self.SystemCall("sudo", ["ot-ctl", "srp", "server", "enable"])
-            self.SystemCall("sudo", ["ot-ctl", "thread", "stop"])
-            self.SystemCall("sudo", ["ot-ctl", "ifconfig", "down"])
-            self.SystemCall("sudo", ["ot-ctl", "ifconfig", "up"])
-            self.SystemCall("sudo", ["ot-ctl", "prefix", "add", "fd11:22::/64","paros"])
-            self.SystemCall("sudo", ["ot-ctl", "thread", "start"])
-            time.sleep(7)
-            self.SystemCall("sudo", ["ot-ctl", "extpanid"])
-        except subprocess.CalledProcessError as e:
-            self.print_red("Error when running " + e.cmd)
-        else:
-            self.GetThreadDataset()
+        self.SystemCall("sudo", ["ot-ctl", "factoryreset"])
+        time.sleep(3)
+        self.SystemCall("sudo", ["ot-ctl", "srp", "server" "disable"])
+        self.SystemCall("sudo", ["ot-ctl", "srp", "server", "enable"])
+        self.SystemCall("sudo", ["ot-ctl", "thread", "stop"])
+        self.SystemCall("sudo", ["ot-ctl", "ifconfig", "down"])
+        self.SystemCall("sudo", ["ot-ctl", "ifconfig", "up"])
+        self.SystemCall("sudo", ["ot-ctl", "prefix", "add", "fd11:22::/64","paros"])
+        self.SystemCall("sudo", ["ot-ctl", "thread", "start"])
+        time.sleep(7)
+        self.SystemCall("sudo", ["ot-ctl", "extpanid"])
+        self.GetThreadDataset()
 
     def GetThreadDataset(self) -> None: 
         self.THREAD_DATA_SET = os.popen("sudo ot-ctl dataset active -x").read().split("\n")[0]

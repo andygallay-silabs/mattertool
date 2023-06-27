@@ -48,7 +48,8 @@ class MatterTool:
     def SystemCall(self, command: str, args: list[str], verbose: bool = False) -> None:
         result = None
         try:
-            result = subprocess.run([command] + args, capture_output=True, text=True, check=True, shell=True)
+            run_args = [command] + args
+            result = subprocess.run(run_args, capture_output=not verbose, text=True, check=True, shell=True)
         except subprocess.CalledProcessError:
             if verbose:
                 print("Error when running command: " + command)
@@ -115,15 +116,15 @@ class MatterTool:
     def StartThreadNetwork(self) -> None:
         results = []
         self.print_green("Starting a new thread network")
-        self.SystemCall("sudo ot-ctl", ["factoryreset"])
+        self.SystemCall("sudo", ["ot-ctl", "factoryreset"])
         time.sleep(3)
-        self.SystemCall("sudo ot-ctl", ["srp", "server" "disable"])
-        self.SystemCall("sudo ot-ctl", ["srp", "server", "enable"])
-        self.SystemCall("sudo ot-ctl", ["thread", "stop"])
-        self.SystemCall("sudo ot-ctl", ["ifconfig", "down"])
-        self.SystemCall("sudo ot-ctl", ["ifconfig", "up"])
-        self.SystemCall("sudo ot-ctl", ["prefix", "add", "fd11:22::/64 paros"])
-        self.SystemCall("sudo ot-ctl", ["thread", "start"])
+        self.SystemCall("sudo", ["ot-ctl", "srp", "server" "disable"])
+        self.SystemCall("sudo", ["ot-ctl", "srp", "server", "enable"])
+        self.SystemCall("sudo", ["ot-ctl", "thread", "stop"])
+        self.SystemCall("sudo", ["ot-ctl", "ifconfig", "down"])
+        self.SystemCall("sudo", ["ot-ctl", "ifconfig", "up"])
+        self.SystemCall("sudo", ["ot-ctl", "prefix", "add", "fd11:22::/64","paros"])
+        self.SystemCall("sudo", ["ot-ctl", "thread", "start"])
         time.sleep(7)
         self.SystemCall("sudo ot-ctl", ["extpanid"])
         self.GetThreadDataset()

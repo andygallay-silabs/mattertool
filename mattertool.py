@@ -47,7 +47,7 @@ class MatterTool:
 
     def SystemCall(self, command: str, args: list[str], verbose: bool = False) -> None:
         try:
-            result = subprocess.run([command] + args, capture_output=True, text=True, check=True)
+            result = subprocess.run([command] + args, capture_output=True, text=True, check=True, shell=True)
         except subprocess.CalledProcessError:
             if verbose:
                 print("Error when running command: " + command)

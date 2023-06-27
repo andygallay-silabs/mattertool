@@ -126,7 +126,7 @@ class MatterTool:
         self.SystemCall("sudo", ["ot-ctl", "prefix", "add", "fd11:22::/64","paros"])
         self.SystemCall("sudo", ["ot-ctl", "thread", "start"])
         time.sleep(7)
-        self.SystemCall("sudo ot-ctl", ["extpanid"])
+        self.SystemCall("sudo", ["ot-ctl", "extpanid"])
         self.GetThreadDataset()
 
     def GetThreadDataset(self) -> None: 

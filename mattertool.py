@@ -6,6 +6,7 @@ import re
 import shutil
 import json
 import atexit
+import subprocess
 
 class MatterTool:
     def __init__(self) -> None:
@@ -43,6 +44,19 @@ class MatterTool:
             "toggle",
             "parsePayload"        
         ]
+
+    def SystemCall(self, command: str, args: list[str], verbose: bool = False) -> None:
+        try:
+            result = subprocess.run([command] + args, capture_output=True, text=True, check=True)
+        except subprocess.CalledProcessError:
+            if verbose:
+                print("Error when running command: " + command)
+        else:
+            if verbose:
+                print("Successfully ran: " + command)
+        finally:
+            return result
+            
 
     def CleanVars(self) -> None:
         self.DISCRIMINATOR = 3840
@@ -98,21 +112,22 @@ class MatterTool:
         self.print_green("You can also enter the full chip-tool command (without the chip-tool) e.g: Mattertool levelcontrol read current-level 106 1")
 
     def StartThreadNetwork(self) -> None:
+        results = []
         self.print_green("Starting a new thread network")
-        os.system("sudo ot-ctl factoryreset")
+        self.SystemCall("sudo ot-ctl", ["factoryreset"])
         time.sleep(3)
-        os.system("sudo ot-ctl srp server disable")
-        os.system("sudo ot-ctl srp server enable")
-        os.system("sudo ot-ctl thread stop")
-        os.system("sudo ot-ctl ifconfig down")
-        os.system("sudo ot-ctl ifconfig up")
-        os.system("sudo ot-ctl prefix add fd11:22::/64 paros")
-        os.system("sudo ot-ctl thread start")
+        self.SystemCall("sudo ot-ctl", ["srp", "server" "disable"])
+        self.SystemCall("sudo ot-ctl", ["srp", "server", "enable"])
+        self.SystemCall("sudo ot-ctl", ["thread", "stop"])
+        self.SystemCall("sudo ot-ctl", ["ifconfig", "down"])
+        self.SystemCall("sudo ot-ctl", ["ifconfig", "up"])
+        self.SystemCall("sudo ot-ctl", ["prefix", "add", "fd11:22::/64 paros"])
+        self.SystemCall("sudo ot-ctl", ["thread", "start"])
         time.sleep(7)
-        os.system("sudo ot-ctl extpanid")
+        self.SystemCall("sudo ot-ctl", ["extpanid"])
         self.GetThreadDataset()
 
-    def GetThreadDataset(self) -> None:
+    def GetThreadDataset(self) -> None: 
         self.THREAD_DATA_SET = os.popen("sudo ot-ctl dataset active -x").read().split("\n")[0]
         self.print_green("New ThreadDataset: " + self.THREAD_DATA_SET)
 

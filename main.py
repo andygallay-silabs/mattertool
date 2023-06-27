@@ -8,7 +8,7 @@ import mattertool
 matterTool = mattertool.MatterTool()
 
 def atexit_handler():
-    json_file = open("session.json", "r")
+    json_file = open("./session.json", "r")
     session_data = json.load(json_file)
 
     session_data["NODE_ID"] = matterTool.NODE_ID

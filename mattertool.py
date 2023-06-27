@@ -9,7 +9,7 @@ import atexit
 
 class MatterTool:
     def __init__(self) -> None:
-        json_file = open("session.json")
+        json_file = open("./session.json")
         session_data = json.load(json_file)
         self.MATTER_ROOT = os.environ["HOME"] + session_data["MATTER_ROOT"]
         self.CHIPTOOL_PATH = self.MATTER_ROOT + session_data["CHIPTOOL_PATH"]

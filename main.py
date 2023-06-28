@@ -18,6 +18,7 @@ def atexit_handler():
     session_data["THREAD_DATA_SET"] = matterTool.THREAD_DATA_SET
     session_data["SSID"] = matterTool.SSID
     session_data["WIFI_PW"] = matterTool.WIFI_PW
+    session_data["VERBOSE"] = matterTool.VERBOSE
 
     json_file.close()
     json_file = open("session.json", "w")

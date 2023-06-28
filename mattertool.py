@@ -43,7 +43,7 @@ class MatterTool:
             "parsePayload"        
         ]
 
-    def SystemCall(self, command: str, args: list[str], verbose: bool = False) -> None:
+    def SystemCall(self, command: str, args: list[str], verbose: bool = False):
         result = None
         try:
             run_args = [command] + args
@@ -75,6 +75,9 @@ class MatterTool:
 
     def print_blue(self, text: str) -> None:
         print('\033[94m' + text + '\033[0m')
+
+    def print_red(self, text: str) -> None:
+        print('\033[91m' + text + '\033[0m]')
 
     def PrintVars(self) -> None:
         self.print_bold("Active Vars:")
@@ -141,8 +144,12 @@ class MatterTool:
         
         self.LAST_NODE_ID = self.NODE_ID
 
-        self.SystemCall(f"{self.CHIPTOOL_PATH} pairing ble-thread {str(self.NODE_ID)} hex:{self.THREAD_DATA_SET} {str(self.PINCODE)} {str(self.DISCRIMINATOR)}", [], verbose=True)
-        self.print_blue("The Node id of the commissioned device is " + str(self.NODE_ID))
+        sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} pairing ble-thread {str(self.NODE_ID)} hex:{self.THREAD_DATA_SET} {str(self.PINCODE)} {str(self.DISCRIMINATOR)}", [])
+
+        if sysCallResult is None or sysCallResult.returncode != 0:
+            self.print_red("Error when pairing BLE device on Thread network.")
+        else:
+            self.print_blue("The Node id of the commissioned device is " + str(self.NODE_ID))
 
     def PairBLEWiFi(self) -> None:
         if "SSID" == "":
@@ -158,13 +165,15 @@ class MatterTool:
 
         self.print_green("Set Node id for the commissioned device : " + str(self.NODE_ID))
         self.LAST_NODE_ID = self.NODE_ID
-        os.system(self.CHIPTOOL_PATH + " pairing ble-wifi " + str(self.NODE_ID)
-                + " " + self.SSID + " " + self.WIFI_PW
-                + " " + str(self.PINCODE) + " " + str(self.DISCRIMINATOR))
-        
+
+        sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} pairing ble-wifi {str(self.NODE_ID)} {self.SSID} {self.WIFI_PW} {str(self.PINCODE)} {str(self.DISCRIMINATOR)}", [])
+        if sysCallResult.returncode != 0:
+            self.print_red("Error when pairing BLE device on WiFi network.")
+
     def SendOnOffCmds(self) -> None:
-        os.system(self.CHIPTOOL_PATH + " onoff " + self.cmd + " " + str(self.NODE_ID)
-                + " " + str(self.ENDPOINT))
+        sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} onoff {self.cmd} {str(self.NODE_ID)} {str(self.ENDPOINT)}", [])
+        if sysCallResult is None or sysCallResult.returncode != 0:
+            self.print_red("Error when sending on/off command.")
         
     def SendParseSetupPayload(self) -> None:
         os.system(self.CHIPTOOL_PATH + " payload parse-setup-payload " + ' '.join(self.optArgs))

@@ -13,7 +13,6 @@ def atexit_handler():
     session_data = json.load(json_file)
 
     session_data["NODE_ID"] = matterTool.NODE_ID
-    session_data["MATTER_ROOT"] = matterTool.MATTER_ROOT
     session_data["LAST_NODE_ID"] = matterTool.LAST_NODE_ID
     session_data["THREAD_DATA_SET"] = matterTool.THREAD_DATA_SET
     session_data["SSID"] = matterTool.SSID

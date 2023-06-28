@@ -20,6 +20,7 @@ class MatterTool:
         self.THREAD_DATA_SET = session_data["THREAD_DATA_SET"]
         self.SSID = session_data["SSID"]
         self.WIFI_PW = session_data["WIFI_PW"]
+        self.VERBOSE = session_data["VERBOSE"]
         self.isNodeProvided = False
         self.cmd = ""
         self.optArgs = []
@@ -57,6 +58,10 @@ class MatterTool:
         finally:
             return result
             
+
+    def ToggleVerbose(self) -> None:
+        self.VERBOSE = not self.VERBOSE
+        print(f"New verbose value: {str(self.VERBOSE)}")
 
     def CleanVars(self) -> None:
         self.DISCRIMINATOR = 3840
@@ -152,7 +157,7 @@ class MatterTool:
         
         self.LAST_NODE_ID = self.NODE_ID
 
-        sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} pairing ble-thread {str(self.NODE_ID)} hex:{self.THREAD_DATA_SET} {str(self.PINCODE)} {str(self.DISCRIMINATOR)}", [])
+        sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} pairing ble-thread {str(self.NODE_ID)} hex:{self.THREAD_DATA_SET} {str(self.PINCODE)} {str(self.DISCRIMINATOR)}", [], verbose=self.VERBOSE)
 
         if self.ErrorInfo(sysCallResult, "Pairing BLE device on Thread network"):
             self.print_blue("The Node id of the commissioned device is " + str(self.NODE_ID))
@@ -173,15 +178,15 @@ class MatterTool:
         self.print_green("Set Node id for the commissioned device : " + str(self.NODE_ID))
         self.LAST_NODE_ID = self.NODE_ID
 
-        sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} pairing ble-wifi {str(self.NODE_ID)} {self.SSID} {self.WIFI_PW} {str(self.PINCODE)} {str(self.DISCRIMINATOR)}", [])
+        sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} pairing ble-wifi {str(self.NODE_ID)} {self.SSID} {self.WIFI_PW} {str(self.PINCODE)} {str(self.DISCRIMINATOR)}", [], verbose=self.VERBOSE)
         self.ErrorInfo(sysCallResult, "Pairing BLE device on WiFi network")
 
     def SendOnOffCmds(self) -> None:
-        sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} onoff {self.cmd} {str(self.NODE_ID)} {str(self.ENDPOINT)}", [])
+        sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} onoff {self.cmd} {str(self.NODE_ID)} {str(self.ENDPOINT)}", [], verbose=self.VERBOSE)
         self.ErrorInfo(sysCallResult, "Sending on/off command")
         
     def SendParseSetupPayload(self) -> None:
-        sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} payload parse-setup-payload {' '.join(self.optArgs)}")
+        sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} payload parse-setup-payload {' '.join(self.optArgs)}", [], verbose=self.VERBOSE)
         self.ErrorInfo(sysCallResult, "Parse setup payload")
 
     def CleanBuildChipTool(self) -> None:

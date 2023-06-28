@@ -8,5 +8,6 @@
    "LAST_NODE_ID": 0,
    "THREAD_DATA_SET": "",
    "SSID": "",
-   "WIFI_PW": ""
+   "WIFI_PW": "",
+   "VERBOSE": false
 }

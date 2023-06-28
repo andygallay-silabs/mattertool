@@ -41,7 +41,8 @@ cmd_dict = {
     "on": matterTool.SendOnOffCmds,
     "off": matterTool.SendOnOffCmds,
     "toggle": matterTool.SendOnOffCmds,
-    "parsePayload": matterTool.SendParseSetupPayload   
+    "parsePayload": matterTool.SendParseSetupPayload,
+    "toggleVerbose": matterTool.ToggleVerbose   
 }
 
 pipEnv = os.popen("pip -V").read()

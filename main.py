@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import atexit
+import subprocess
 
 import mattertool
 
@@ -46,7 +47,7 @@ pipEnv = os.popen("pip -V").read()
 
 # Activate Matter environment if it isn't already
 if pipEnv not in matterTool.MATTER_ROOT:
-    os.system(matterTool.MATTER_ROOT + "/scripts/activate.sh")
+    subprocess.run([matterTool.MATTER_ROOT + "/scripts/activate.sh"], shell=True)
 
 # Get arguments and remove the first one (invocation of mattertool.py)
 sys_argv = sys.argv

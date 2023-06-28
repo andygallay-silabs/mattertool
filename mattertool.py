@@ -1,11 +1,9 @@
-import sys
 import os
 import random
 import time
 import re
 import shutil
 import json
-import atexit
 import subprocess
 
 class MatterTool:
@@ -142,9 +140,9 @@ class MatterTool:
             self.NODE_ID = 1 + random.randint(0, 32767) % 100000
         
         self.LAST_NODE_ID = self.NODE_ID
-        os.system(self.CHIPTOOL_PATH + " pairing ble-thread " + 
-                str(self.NODE_ID) + " hex:" + self.THREAD_DATA_SET +
-                " " + str(self.PINCODE) + " " + str(self.DISCRIMINATOR))
+
+        run_args = ["pairing", "ble-thread", self.NODE_ID, "hex:", self.THREAD_DATA_SET, str(self.PINCODE), str(self.DISCRIMINATOR)]
+        self.SystemCall(self.CHIPTOOL_PATH, run_args)
         self.print_blue("The Node id of the commissioned device is " + str(self.NODE_ID))
 
     def PairBLEWiFi(self) -> None:

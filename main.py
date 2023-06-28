@@ -129,4 +129,5 @@ while len(sys_argv) >= 1:
 if matterTool.cmd in matterTool.cmd_list:
     cmd_dict[matterTool.cmd]()
 else:
-    os.system(matterTool.CHIPTOOL_PATH + matterTool.cmd + " " + ' '.join(matterTool.optArgs))
+    run_args = [matterTool.CHIPTOOL_PATH, matterTool.cmd] + matterTool.optArgs
+    subprocess.run(run_args, shell=True)

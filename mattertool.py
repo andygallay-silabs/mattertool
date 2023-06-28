@@ -72,6 +72,7 @@ class MatterTool:
         self.THREAD_DATA_SET = ""
         self.SSID = ""
         self.WIFI_PW = ""
+        self.MATTER_ROOT = "/connectedhomeip"
 
     def print_bold(self, text: str) -> None:
         print('\033[1m' + text + '\033[0m')

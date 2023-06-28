@@ -141,8 +141,8 @@ class MatterTool:
         
         self.LAST_NODE_ID = self.NODE_ID
 
-        run_args = ["pairing", "ble-thread", self.NODE_ID, "hex:", self.THREAD_DATA_SET, str(self.PINCODE), str(self.DISCRIMINATOR)]
-        self.SystemCall(self.CHIPTOOL_PATH, run_args)
+        run_args = ["ble-thread", self.NODE_ID, "hex:", self.THREAD_DATA_SET, str(self.PINCODE), str(self.DISCRIMINATOR)]
+        self.SystemCall(self.CHIPTOOL_PATH + "pairing", run_args)
         self.print_blue("The Node id of the commissioned device is " + str(self.NODE_ID))
 
     def PairBLEWiFi(self) -> None:

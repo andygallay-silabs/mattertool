@@ -193,18 +193,16 @@ class MatterTool:
 
     def CleanBuildChipTool(self) -> None:
         self.print_blue("Clean Build of Chip-tool")
-        os.system("rm -rf " + self.MATTER_ROOT + "/out")
+        self.SystemCall(f"rm -rf {self.MATTER_ROOT}/out", [], verbose=self.VERBOSE)
 
         for directory in os.listdir(self.MATTER_ROOT + "/tmp/"):
             if re.fullmatch("chp_.*", directory):
                 shutil.rmtree(directory)
 
-        os.system(self.MATTER_ROOT + "/scripts/examples/gn_build_example.sh " + self.MATTER_ROOT + "/examples/chip-tool " + self.MATTER_ROOT
-                + "/out/standalone")
+        self.SystemCall(f"{self.MATTER_ROOT}/scripts/examples/gn_build_example.sh {self.MATTER_ROOT}/examples/chip-tool {self.MATTER_ROOT}/out/standalone", [], verbose=self.VERBOSE)
     
     def RebuildChipTool(self) -> None:
         self.print_blue("Rebuild Chip-tool")
-        os.system(self.MATTER_ROOT + "/scripts/examples/gn_build_example.sh " + self.MATTER_ROOT + "/examples/chip-tool " + self.MATTER_ROOT
-                + "/out/standalone")
+        self.SystemCall(f"{self.MATTER_ROOT}/scripts/examples/gn_build_example.sh {self.MATTER_ROOT}/examples/chip-tool {self.MATTER_ROOT}/out/standalone", [])
 
     

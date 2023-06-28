@@ -41,7 +41,8 @@ class MatterTool:
             "on",
             "off",
             "toggle",
-            "parsePayload"        
+            "parsePayload",
+            "toggleVerbose"        
         ]
 
     def SystemCall(self, command: str, args: list[str], verbose: bool = False):

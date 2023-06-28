@@ -13,6 +13,7 @@ def atexit_handler():
     session_data = json.load(json_file)
 
     session_data["NODE_ID"] = matterTool.NODE_ID
+    session_data["MATTER_ROOT"] = matterTool.MATTER_ROOT
     session_data["LAST_NODE_ID"] = matterTool.LAST_NODE_ID
     session_data["THREAD_DATA_SET"] = matterTool.THREAD_DATA_SET
     session_data["SSID"] = matterTool.SSID
@@ -47,7 +48,7 @@ pipEnv = os.popen("pip -V").read()
 
 # Activate Matter environment if it isn't already
 if pipEnv not in matterTool.MATTER_ROOT:
-    subprocess.run([matterTool.MATTER_ROOT + "/scripts/activate.sh"], shell=True)
+    subprocess.run([matterTool.MATTER_ROOT + "/scripts/activate.sh"], shell=True, capture_output=True)
 
 # Get arguments and remove the first one (invocation of mattertool.py)
 sys_argv = sys.argv

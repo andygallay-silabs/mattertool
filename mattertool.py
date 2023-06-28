@@ -114,6 +114,14 @@ class MatterTool:
         self.PrintVars()
         self.print_green("You can also enter the full chip-tool command (without the chip-tool) e.g: Mattertool levelcontrol read current-level 106 1")
 
+    def ErrorInfo(self, result, cmd: str) -> bool:
+        if result is None or result.returncode != 0:
+            self.print_red(f"Error when running command: {cmd}")
+            return False
+        else:
+            self.print_green(f"\'{cmd}\' success!")
+            return True
+
     def StartThreadNetwork(self) -> None:
         results = []
         self.print_green("Starting a new thread network")
@@ -146,10 +154,9 @@ class MatterTool:
 
         sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} pairing ble-thread {str(self.NODE_ID)} hex:{self.THREAD_DATA_SET} {str(self.PINCODE)} {str(self.DISCRIMINATOR)}", [])
 
-        if sysCallResult is None or sysCallResult.returncode != 0:
-            self.print_red("Error when pairing BLE device on Thread network.")
-        else:
+        if self.ErrorInfo(sysCallResult, "Pairing BLE device on Thread network"):
             self.print_blue("The Node id of the commissioned device is " + str(self.NODE_ID))
+            
 
     def PairBLEWiFi(self) -> None:
         if "SSID" == "":
@@ -167,16 +174,15 @@ class MatterTool:
         self.LAST_NODE_ID = self.NODE_ID
 
         sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} pairing ble-wifi {str(self.NODE_ID)} {self.SSID} {self.WIFI_PW} {str(self.PINCODE)} {str(self.DISCRIMINATOR)}", [])
-        if sysCallResult.returncode != 0:
-            self.print_red("Error when pairing BLE device on WiFi network.")
+        self.ErrorInfo(sysCallResult, "Pairing BLE device on WiFi network")
 
     def SendOnOffCmds(self) -> None:
         sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} onoff {self.cmd} {str(self.NODE_ID)} {str(self.ENDPOINT)}", [])
-        if sysCallResult is None or sysCallResult.returncode != 0:
-            self.print_red("Error when sending on/off command.")
+        self.ErrorInfo(sysCallResult, "Sending on/off command")
         
     def SendParseSetupPayload(self) -> None:
-        os.system(self.CHIPTOOL_PATH + " payload parse-setup-payload " + ' '.join(self.optArgs))
+        sysCallResult = self.SystemCall(f"{self.CHIPTOOL_PATH} payload parse-setup-payload {' '.join(self.optArgs)}")
+        self.ErrorInfo(sysCallResult, "Parse setup payload")
 
     def CleanBuildChipTool(self) -> None:
         self.print_blue("Clean Build of Chip-tool")
